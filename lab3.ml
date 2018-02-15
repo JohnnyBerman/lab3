@@ -91,7 +91,7 @@ channels. You'll want to use Simple and RGB as the value constructors
 in this new variant type.
 ......................................................................*)
 
-type color = Simple of color_label | RGB of int*int*int;;
+type color = Simple of color_label | RGB of (int * int * int);;
 
 (* Note that there is an important assumption about the RGB values
 that determine whether a color is valid or not. The RGB type contains
@@ -117,8 +117,14 @@ an Invalid_Color exception with a useful message.
 
 exception Invalid_Color of string ;;
 
-let valid_rgb = 
-  fun _ -> failwith "valid_rgb not implemented" ;;
+let valid_rgb (c: color) : color = 
+  let is_valid (ele : int) : bool =
+    ele >= 0 && ele <= 255 in
+  match c with
+  | Simple col as c -> c
+  | RGB (r, g, b) as c -> if (is_valid r) && (is_valid g) && (is_valid b)
+    then c
+    else raise (Invalid_Color "Invalid Color");;
 
 (*......................................................................
 Exercise 3: Write a function, make_color, that accepts three integers
@@ -126,8 +132,8 @@ for the channel values and returns a value of the color type. Be sure
 to verify the invariant.
 ......................................................................*)
 
-let make_color = 
-  fun _ -> failwith "make_color not implemented" ;;
+let make_color (r : int) (g : int) (b : int) : color = 
+  valid_rgb (RGB (r, g, b));;
 
 (*......................................................................
 Exercise 4: Write a function, convert_to_rgb, that accepts a color and
@@ -144,8 +150,19 @@ below are some other values you might find helpful.
     240 | 130 | 240 | Violet
 ......................................................................*)
 
-let convert_to_rgb = 
-  fun _ -> failwith "convert_to_rgb not implemented" ;;
+let convert_to_rgb (c : color) : (int * int * int) = 
+  match c with
+  | RGB c -> c
+  | Simple c -> 
+    match c with
+    | Red -> (255, 0, 0)
+    | Crimson -> (164, 15, 52)
+    | Orange -> (255, 165, 0)
+    | Yellow -> (255, 255, 0)
+    | Green -> (0, 255, 0)
+    | Blue -> (0, 0, 255)
+    | Indigo -> (75, 0, 130)
+    | Violet -> (240, 130, 240);;
 
 (* If we want to blend two colors, we might be tempted to average each
 of the individual color channels. This might be fine, but a quirk in
@@ -169,8 +186,8 @@ and returns an integer whose result matches the calculation above. Be
 sure to round your result when converting back to an integer.
 ......................................................................*)
 
-let blend_channel = 
-  fun _ -> failwith "blend_channel not implemented" ;;
+let blend_channel (a : int) (b : int) : int = 
+  int_of_float (sqrt (((float_of_int a) ** 2.) +. ((float_of_int b)**2.))) ;;
 
 (*......................................................................
 Exercise 6: Now write a function, blend, that returns the result of
@@ -205,7 +222,7 @@ should be. Then, consider the implications of representing the overall
 data type as a tuple or a record.
 ......................................................................*)
 
-type date = {year : int; month : string; day : int} ;;
+type date = {year : int; month : int; day : int} ;;
 
 (* After you've thought it through, look up the Date module in the
 OCaml documentation to see how this was implemented there. If you
