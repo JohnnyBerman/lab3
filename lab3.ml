@@ -156,7 +156,7 @@ let convert_to_rgb (c : color) : (int * int * int) =
   | Simple c -> 
     match c with
     | Red -> (255, 0, 0)
-    | Crimson -> (164, 15, 52)
+    | Crimson -> (164, 16, 52)
     | Orange -> (255, 165, 0)
     | Yellow -> (255, 255, 0)
     | Green -> (0, 255, 0)
